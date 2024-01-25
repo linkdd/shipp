@@ -6,7 +6,7 @@ might be a solution, but as far as I know, those requires a registry.
 I just want to point to a git repository and say "this is my dependency, build it".
 
 This is how **Shipp** was born. If you want to read more about it, I wrote an
-article on my blog [here](https://david-delassus.medium.com/555eecbf7d2e?source=friends_link&sk=0a6649fef2325de32ca8ad6f51aaefd5).
+article on my blog [here](https://david-delassus.medium.com/thats-it-i-m-making-my-own-c-package-manager-555eecbf7d2e?sk=0a6649fef2325de32ca8ad6f51aaefd5).
 
 ## Installation
 
