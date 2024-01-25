@@ -39,6 +39,9 @@ repository:
 }
 ```
 
+> **NB:** Your dependencies need to be Shipp packages as well, with their own
+> `shipp.json` file at the root of the repository.
+
 Then run the following commands:
 
 **To fetch dependencies (`git clone` or `git pull`) in `.shipp/deps/`:**
