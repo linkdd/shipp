@@ -1,0 +1,8 @@
+{
+  "name": "shipp",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "cargo build --release",
+    "install": "cargo install --path . --root $SHIPP_DIST_DIR"
+  }
+}
