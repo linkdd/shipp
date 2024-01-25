@@ -1,3 +1,2 @@
-mod manifest;
-
-pub use self::manifest::*;
+pub mod manifest;
+pub mod dirs;
