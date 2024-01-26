@@ -44,6 +44,9 @@ fn build_and_install_deps(deps: &[Dependency]) -> Result<()> {
       .arg(&local_manifest.scripts.build)
       .current_dir(&build_dir)
       .env("SHIPP_DIST_DIR", dirs::dist()?)
+      .env("SHIPP_TARGET_ARCH", std::env::consts::ARCH)
+      .env("SHIPP_TARGET_FAMILY", std::env::consts::FAMILY)
+      .env("SHIPP_TARGET_OS", std::env::consts::OS)
       .stdout(logfile.try_clone()?)
       .stderr(logfile.try_clone()?)
       .status()?;
@@ -59,6 +62,9 @@ fn build_and_install_deps(deps: &[Dependency]) -> Result<()> {
       .arg(&local_manifest.scripts.install)
       .current_dir(&build_dir)
       .env("SHIPP_DIST_DIR", dirs::dist()?)
+      .env("SHIPP_TARGET_ARCH", std::env::consts::ARCH)
+      .env("SHIPP_TARGET_FAMILY", std::env::consts::FAMILY)
+      .env("SHIPP_TARGET_OS", std::env::consts::OS)
       .stdout(logfile.try_clone()?)
       .stderr(logfile.try_clone()?)
       .status()?;
