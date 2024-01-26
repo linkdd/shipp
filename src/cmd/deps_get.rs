@@ -34,6 +34,7 @@ fn fetch_deps(deps: &[Dependency], visited: Vec<String>) -> Result<()> {
     let ret = if build_dir.exists() {
       Command::new("git")
         .arg("pull")
+        .arg("--recurse-submodules")
         .current_dir(&build_dir)
         .stdout(logfile.try_clone()?)
         .stderr(logfile.try_clone()?)
@@ -42,6 +43,7 @@ fn fetch_deps(deps: &[Dependency], visited: Vec<String>) -> Result<()> {
     else {
       Command::new("git")
         .arg("clone")
+        .arg("--recurse-submodules")
         .arg(&dep.url)
         .arg(&build_dir)
         .stdout(logfile.try_clone()?)
