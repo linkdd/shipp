@@ -1,6 +1,7 @@
 use crate::internal::manifest::{Dependency, Manifest};
 use crate::internal::dirs;
 
+use std::collections::HashMap;
 use std::fs::create_dir_all;
 use std::process::Command;
 
@@ -8,12 +9,23 @@ pub fn deps_build(manifest: &Manifest) -> std::io::Result<()> {
   let ws = dirs::workspace()?;
   create_dir_all(&ws)?;
 
-  build_and_install_deps(&manifest.dependencies)?;
+  let mut cache = HashMap::new();
+  build_and_install_deps(&manifest.dependencies, &mut cache)?;
 
   Ok(())
 }
 
-fn build_and_install_deps(deps: &[Dependency]) -> std::io::Result<()> {
+fn build_and_install_deps(
+  deps: &[Dependency],
+  cache: &mut HashMap<String, bool>,
+) -> std::io::Result<()> {
+  let deps: Vec<&Dependency> = {
+    deps
+      .iter()
+      .filter(|dep| !cache.get(&dep.name).unwrap_or(&false))
+      .collect()
+  };
+
   for dep in deps {
     let build_dir = dirs::deps()?.join(&dep.name);
 
@@ -27,7 +39,7 @@ fn build_and_install_deps(deps: &[Dependency]) -> std::io::Result<()> {
 
     let local_manifest = build_dir.join("shipp.json");
     let local_manifest = Manifest::from_file(&local_manifest)?;
-    build_and_install_deps(&local_manifest.dependencies)?;
+    build_and_install_deps(&local_manifest.dependencies, cache)?;
 
     println!("===[ Building {} ]===", dep.name);
 
@@ -60,6 +72,8 @@ fn build_and_install_deps(deps: &[Dependency]) -> std::io::Result<()> {
       eprintln!("ERROR: Failed to install dependency '{}'", dep.name);
       std::process::exit(1);
     }
+
+    cache.insert(dep.name.clone(), true);
   }
 
   Ok(())

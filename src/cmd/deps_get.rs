@@ -1,6 +1,7 @@
 use crate::internal::manifest::{Dependency, Manifest};
 use crate::internal::dirs;
 
+use std::collections::HashMap;
 use std::fs::create_dir_all;
 use std::process::Command;
 
@@ -8,12 +9,25 @@ pub fn deps_get(manifest: &Manifest) -> std::io::Result<()> {
   let ws = dirs::workspace()?;
   create_dir_all(&ws)?;
 
-  fetch_deps(&manifest.dependencies, Vec::new())?;
+  let mut cache = HashMap::new();
+  let visited = Vec::new();
+  fetch_deps(&manifest.dependencies, visited, &mut cache)?;
 
   Ok(())
 }
 
-fn fetch_deps(deps: &[Dependency], visited: Vec<String>) -> std::io::Result<()> {
+fn fetch_deps(
+  deps: &[Dependency],
+  visited: Vec<String>,
+  cache: &mut HashMap<String, bool>,
+) -> std::io::Result<()> {
+  let deps: Vec<&Dependency> = {
+    deps
+      .iter()
+      .filter(|dep| !cache.get(&dep.name).unwrap_or(&false))
+      .collect()
+  };
+
   for dep in deps {
     println!("===[ Fetch {} ]===", dep.name);
 
@@ -58,12 +72,14 @@ fn fetch_deps(deps: &[Dependency], visited: Vec<String>) -> std::io::Result<()> 
       }
     }
 
+    cache.insert(dep.name.clone(), true);
+
     let local_manifest = build_dir.join("shipp.json");
     if local_manifest.exists() {
       let local_manifest = Manifest::from_file(&local_manifest)?;
       let mut visited = visited.clone();
       visited.push(dep.name.clone());
-      fetch_deps(&local_manifest.dependencies, visited)?;
+      fetch_deps(&local_manifest.dependencies, visited, cache)?;
     }
     else {
       eprintln!("ERROR: No shipp.json found in dependency '{}'", dep.name);
