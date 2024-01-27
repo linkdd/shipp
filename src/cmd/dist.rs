@@ -2,14 +2,12 @@ use crate::internal::manifest::Manifest;
 use crate::internal::dirs;
 
 use std::fs::OpenOptions;
-use std::io::{stdout, Result, Write};
 
 use flate2::write::GzEncoder;
 use flate2::Compression;
 
-pub fn dist(manifest: &Manifest) -> Result<()> {
-  print!("Packaging project... ");
-  stdout().flush()?;
+pub fn dist(manifest: &Manifest) -> std::io::Result<()> {
+  println!("===[ Packaging project ]===");
 
   let (name, version) = (
     manifest.name.clone(),
